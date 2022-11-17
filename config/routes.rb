@@ -2,7 +2,9 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
-  root "tasks#index"
+  root "projects#index"
 
-  resources :tasks
+  resources :projects do
+    resources :tasks
+  end
 end
