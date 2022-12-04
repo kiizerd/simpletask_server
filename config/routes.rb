@@ -6,5 +6,8 @@ Rails.application.routes.draw do
 
   resources :projects do
     resources :tasks
+    resources :sections do
+      get '/tasks', to: 'tasks#section_index'
+    end
   end
 end

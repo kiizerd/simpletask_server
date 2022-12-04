@@ -2,13 +2,15 @@ class ProjectsController < ApplicationController
   def index
     @projects = Project.all
 
+    # Includes for reference
+    # render json: @projects, include: [:sections, :tasks]
     render json: @projects
   end
 
   def show
     @project = Project.find(params[:id])
 
-    render json: @project
+    render json: @project, include: [:sections => { include: :tasks }]
   end
 
   def create
