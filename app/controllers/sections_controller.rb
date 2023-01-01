@@ -2,15 +2,15 @@ class SectionsController < ApplicationController
   before_action :set_project
 
   def index
-    @sections = @project.sections.order(id: :asc)
+    @sections = @project.sections
 
-    render json: @sections
+    render json: @sections, include: :tasks
   end
 
   def show
     @section = @project.sections.find(params[:id])
 
-    render json: @section, include: [:tasks]
+    render json: @section, include: :tasks
   end
 
   def create
@@ -35,12 +35,11 @@ class SectionsController < ApplicationController
 
   def destroy
     @section = @project.sections.find(params[:id])
-    # Destroy associated tasks
-    section_tasks = Task.all.where(section_id: params[:id])
-    section_tasks.each { |t| t.destroy }
+    @tasks = Task.where(section_id: params[:id])
+    @tasks.map(&:destroy)
     @section.destroy
 
-    render json: @project, status: :see_other
+    render json: @project.sections, status: :see_other
   end
 
   private
@@ -50,6 +49,6 @@ class SectionsController < ApplicationController
   end
 
   def section_params
-    params.require(:section).permit(:name)
+    params.require(:section).permit(:name, :status)
   end
 end

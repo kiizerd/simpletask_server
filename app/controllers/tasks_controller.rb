@@ -8,20 +8,18 @@ class TasksController < ApplicationController
   end
 
   def section_index
-    @tasks = Task.all.where(section_id: params[:section_id])
+    @tasks = Task.where(section_id: params[:section_id])
 
     render json: @tasks
   end
 
   def show
-    # @task = Task.find(params[:id])
     @task = @project.tasks.find(params[:id])
 
     render json: @task
   end
 
   def create
-    # @task = Task.new(task_params)
     @task = @project.tasks.create(task_params)
 
     if @task.save
@@ -32,7 +30,6 @@ class TasksController < ApplicationController
   end
 
   def update
-    # @task = Task.find(params[:id])
     @task = @project.tasks.find(params[:id])
 
     if @task.update(task_params)
@@ -43,12 +40,11 @@ class TasksController < ApplicationController
   end
 
   def destroy
-    # @task = Task.find(params[:id])
     @task = @project.tasks.find(params[:id])
     @task.destroy
+    @tasks = @project.tasks.where(section_id: @task.section_id)
 
-    # render json: Task.all, status: :see_other
-    render json: @project, status: :see_other
+    render json: @tasks, status: :see_other
   end
 
   private
@@ -58,6 +54,6 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:name, :details, :section_id)
+    params.require(:task).permit(:name, :details, :status, :section_id)
   end
 end
