@@ -8,10 +8,11 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     # Vite dev server at 5173 and production at 8000
-    origins "http://localhost:5173", "http://localhost:8000"
+    origins 'http://localhost:5173', 'http://localhost:8000'
 
-    resource "*",
-      headers: :any,
-      methods: [:get, :post, :put, :patch, :delete, :options, :head]
+    resource '*',
+             headers: :any,
+             methods: %i[get post put patch delete options head],
+             credentials: true
   end
 end
