@@ -3,33 +3,40 @@ class ApplicationController < ActionController::API
   before_action :authenticate_user!
 
   SECRET = Rails.application.secrets.secret_key_base
+  JWT_ALGORITHM = 'HS256'.freeze
 
   private
 
   def authenticate_user!
-    token = cookies[:token]
-    decoded_token = decode_jwt(token) if token
-    @current_user = User.find(decoded_token[0]['id']) if decoded_token
+    user_id = decoded_token['id'].to_i
+    return if User.exists?(user_id)
 
-    return unless @current_user.nil?
-
-    render json: { error: 'Unauthorized access', debug: { token:, decoded_token: } }, status: :unauthorized
+    render json: { error: 'Invalid user id' }, status: :unauthorized
   end
 
   def generate_session_cookie(user)
     token = generate_jwt(user)
     cookies[:token] = {
       value: token,
-      expires: 1.week
+      expires: 10.seconds
     }
   end
 
   def generate_jwt(user)
     payload = { id: user.id, expires: 1.week }
-    JWT.encode(payload, Rails.application.secrets.secret_key_base, 'HS256')
+    JWT.encode(payload, Rails.application.secrets.secret_key_base, JWT_ALGORITHM)
   end
 
   def decode_jwt(token)
     JWT.decode(token, SECRET, true, { algorithm: 'HS256' })
+  end
+
+  def decoded_token
+    @decoded_token ||= begin
+      token = cookies[:token]
+      return {} unless token
+
+      JWT.decode(token, SECRET, true, algorithm: JWT_ALGORITHM).first
+    end
   end
 end
