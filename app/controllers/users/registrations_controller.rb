@@ -15,7 +15,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     user = User.create(sign_up_params)
     if user.valid?
       sign_up :user, user
-      respond_with(user)
+      generate_session_cookie(user)
+      render json: { user: }, status: :created
     else
       render json: user.errors.messages, status: :unprocessable_entity
     end
