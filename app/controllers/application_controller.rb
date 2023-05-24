@@ -18,12 +18,12 @@ class ApplicationController < ActionController::API
     token = generate_jwt(user)
     cookies[:token] = {
       value: token,
-      expires: 10.seconds
+      expires: 1.week
     }
   end
 
   def generate_jwt(user)
-    payload = { id: user.id, expires: 1.week }
+    payload = { id: user.id }
     JWT.encode(payload, Rails.application.secrets.secret_key_base, JWT_ALGORITHM)
   end
 
