@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project.all
+    @projects = Project.where(user_id: @current_user.id)
 
     render json: @projects
   end
@@ -13,6 +13,7 @@ class ProjectsController < ApplicationController
 
   def create
     @project = Project.new(project_params)
+    @project.user_id = @current_user.id
 
     if @project.save
       render json: @project
