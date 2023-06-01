@@ -9,7 +9,8 @@ class ApplicationController < ActionController::API
 
   def authenticate_user!
     user_id = decoded_token['id'].to_i
-    return if User.exists?(user_id)
+    @current_user = User.find(user_id)
+    return unless @current_user.nil?
 
     render json: { error: 'Invalid user id' }, status: :unauthorized
   end
