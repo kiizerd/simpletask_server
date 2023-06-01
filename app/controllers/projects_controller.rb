@@ -2,7 +2,7 @@ class ProjectsController < ApplicationController
   def index
     @projects = Project.where(user_id: @current_user.id)
 
-    render json: @projects
+    render json: @projects, include: [sections: { include: :tasks }]
   end
 
   def show
