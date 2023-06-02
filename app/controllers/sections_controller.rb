@@ -1,10 +1,10 @@
 class SectionsController < ApplicationController
-  before_action :set_project
+  before_action :set_project, except: :move_task
 
   def index
     @sections = @project.sections
 
-    render json: @sections, include: :tasks
+    render json: @sections
   end
 
   def show
@@ -40,6 +40,14 @@ class SectionsController < ApplicationController
     @section.destroy
 
     render json: @project.sections, status: :see_other
+  end
+
+  def move_task
+    move_params = params.require(:task).permit(:id, :index)
+    task_to_move = Task.find(move_params[:id])
+    @section = Section.find(params[:id])
+    new_position = @section.tasks.size - move_params[:index]
+    task_to_move.insert_at(new_position)
   end
 
   private
