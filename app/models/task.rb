@@ -1,8 +1,10 @@
 class Task < ApplicationRecord
   belongs_to :project
   belongs_to :section
+  acts_as_list scope: :section
 
-  default_scope -> { order(id: :asc) }
+  # Can't have a default scope if ordering by position
+  # default_scope -> { order(id: :asc) }
 
   enum :status, %w[standby active complete archived]
 
