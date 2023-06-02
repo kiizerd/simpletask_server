@@ -22,6 +22,8 @@ gem 'jwt', '~> 1.5', '>= 1.5.4'
 gem 'rubocop', '~> 1.51', require: false
 gem 'rubocop-rails', '~> 2.19', '>= 2.19.1'
 
+gem 'acts_as_list'
+
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 
