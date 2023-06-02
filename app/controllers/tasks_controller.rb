@@ -1,5 +1,6 @@
 class TasksController < ApplicationController
   before_action :set_project, except: :section_index
+  before_action :set_section, only: :create
 
   def index
     @tasks = Task.all
@@ -8,7 +9,7 @@ class TasksController < ApplicationController
   end
 
   def section_index
-    @tasks = Task.where(section_id: params[:section_id])
+    @tasks = Task.where(section_id: params[:section_id]).order(position: :desc)
 
     render json: @tasks
   end
@@ -20,12 +21,14 @@ class TasksController < ApplicationController
   end
 
   def create
-    @task = @project.tasks.create(task_params)
+    task = { section: @section, position: 1, **task_params }
+    @task = @project.tasks.create(task)
 
     if @task.save
       render json: @task
     else
-      render json: @task.errors, status: :unprocessable_entity
+      name_errors = @task.errors.full_messages_for(:name)
+      render json: { name: name_errors.join("\n") }, status: :unprocessable_entity
     end
   end
 
@@ -51,6 +54,10 @@ class TasksController < ApplicationController
 
   def set_project
     @project = Project.find(params[:project_id])
+  end
+
+  def set_section
+    @section = Section.find(task_params[:section_id])
   end
 
   def task_params
