@@ -18,6 +18,9 @@ class TasksController < ApplicationController
     @task = @project.tasks.find(params[:id])
 
     render json: @task
+  rescue ActiveRecord::RecordNotFound
+    @task = nil
+    render json: formatted_errors
   end
 
   def create
@@ -27,8 +30,7 @@ class TasksController < ApplicationController
     if @task.save
       render json: @task
     else
-      name_errors = @task.errors.full_messages_for(:name)
-      render json: { name: name_errors.join("\n") }, status: :unprocessable_entity
+      render json: formatted_errors, status: :unprocessable_entity
     end
   end
 
@@ -38,7 +40,7 @@ class TasksController < ApplicationController
     if @task.update(task_params)
       render json: @task
     else
-      render json: @task.errors, status: :unprocessable_entity
+      render json: formatted_errors, status: :unprocessable_entity
     end
   end
 
@@ -47,7 +49,7 @@ class TasksController < ApplicationController
     @task.destroy
     @tasks = @project.tasks.where(section_id: @task.section_id)
 
-    render json: @tasks, status: :see_other
+    render status: :no_content
   end
 
   private
@@ -62,5 +64,9 @@ class TasksController < ApplicationController
 
   def task_params
     params.require(:task).permit(:name, :details, :status, :section_id)
+  end
+
+  def formatted_errors
+    super(@task)
   end
 end
