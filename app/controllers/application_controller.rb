@@ -9,7 +9,12 @@ class ApplicationController < ActionController::API
 
   def authenticate_user!
     user_id = decoded_token['id'].to_i
-    @current_user = User.find(user_id)
+    begin
+      @current_user = User.find(user_id)
+    rescue ActiveRecord::RecordNotFound
+      @current_user = nil
+    end
+    # Return if user is valid
     return unless @current_user.nil?
 
     render json: { error: 'Invalid user id' }, status: :unauthorized
@@ -35,10 +40,37 @@ class ApplicationController < ActionController::API
 
   def decoded_token
     @decoded_token ||= begin
-      token = cookies[:token]
+      token = cookies.encrypted[:token]
       return {} unless token
 
       JWT.decode(token, SECRET, true, algorithm: JWT_ALGORITHM).first
+    end
+  end
+
+  def formatted_errors(resource)
+    return errors_for_nil_resource if resource.nil?
+
+    errors = resource.errors
+    details = errors.details
+    messages = details.keys.index_with { |m| errors.full_messages_for(m) }
+
+    { code: determine_error_code(resource), messages:, details: }
+  end
+
+  def determine_error_code(resource)
+    errors = resource.errors
+    if resource.class.attribute_names.any? { |n| errors.include?(n) }
+      'invalid_parameters'
+    else
+      'unknown_error'
+    end
+  end
+
+  def errors_for_nil_resource
+    if @current_user
+      { code: 'record_not_found' }
+    else
+      { code: 'authentication failed' }
     end
   end
 end
