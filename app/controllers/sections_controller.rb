@@ -1,5 +1,5 @@
 class SectionsController < ApplicationController
-  before_action :set_project, except: :move_task
+  before_action :set_project
 
   def index
     @sections = @project.sections
@@ -44,8 +44,8 @@ class SectionsController < ApplicationController
 
   def move_task
     move_params = params.require(:task).permit(:id, :index)
-    task_to_move = Task.find(move_params[:id])
-    @section = Section.find(params[:id])
+    @section = @project.sections.find(params[:section_id])
+    task_to_move = @section.tasks.find(move_params[:id])
     new_position = @section.tasks.size - move_params[:index]
     task_to_move.insert_at(new_position)
   end
@@ -53,7 +53,7 @@ class SectionsController < ApplicationController
   private
 
   def set_project
-    @project = Project.find(params[:project_id])
+    @project = current_user.projects.find(params[:project_id])
   end
 
   def section_params

@@ -10,8 +10,7 @@ Rails.application.routes.draw do
     resources :tasks
     resources :sections do
       get '/tasks', to: 'tasks#section_index'
+      post '/move_task', to: 'sections#move_task'
     end
   end
-
-  post 'sections/:id/move_task', to: 'sections#move_task'
 end
