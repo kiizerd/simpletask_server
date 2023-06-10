@@ -33,7 +33,9 @@ class ApplicationController < ActionController::API
 
   def generate_jwt(user)
     payload = { id: user.id }
-    JWT.encode(payload, Rails.application.secrets.secret_key_base, JWT_ALGORITHM)
+    key_base = Rails.application.secrets.secret_key_base
+    algo = JWT_ALGORITHM
+    JWT.encode(payload, key_base, algo)
   end
 
   def decode_jwt(token)
