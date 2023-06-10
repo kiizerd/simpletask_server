@@ -29,5 +29,8 @@ module SimpletaskServer
     config.middleware.use ActionDispatch::Session::CookieStore
 
     config.middleware.use CaseConverter::Middleware
+
+    # Add client to list of hosts
+    Rails.application.config.hosts << 'onrender.com'
   end
 end

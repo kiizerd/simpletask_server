@@ -25,7 +25,8 @@ class ApplicationController < ActionController::API
     cookies.encrypted[:token] = {
       value: token,
       expires: 1.week,
-      httponly: true
+      httponly: true,
+      domain: Rails.env.development? ? 'localhost' : 'simpletask.onrender.com'
     }
   end
 
