@@ -26,6 +26,7 @@ class ApplicationController < ActionController::API
       value: token,
       expires: 1.week,
       httponly: true,
+      secure: true,
       domain: Rails.env.development? ? 'localhost' : 'simpletask.onrender.com'
     }
   end
