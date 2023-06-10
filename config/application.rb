@@ -31,6 +31,6 @@ module SimpletaskServer
     config.middleware.use CaseConverter::Middleware
 
     # Add client to list of hosts
-    Rails.application.config.hosts << 'onrender.com'
+    Rails.application.config.hosts << 'simpletask.onrender.com'
   end
 end
