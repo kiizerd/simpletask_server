@@ -2,7 +2,7 @@ class ApplicationController < ActionController::API
   include ActionController::Cookies
   before_action :authenticate_user!
 
-  SECRET = Rails.application.secrets.secret_key_base
+  SECRET = Rails.application.secrets.secret_key_base.to_s
   JWT_ALGORITHM = 'HS256'.freeze
 
   private
@@ -33,9 +33,7 @@ class ApplicationController < ActionController::API
 
   def generate_jwt(user)
     payload = { id: user.id }
-    key_base = Rails.application.secrets.secret_key_base
-    algo = JWT_ALGORITHM
-    JWT.encode(payload, key_base, algo)
+    JWT.encode(payload, SECRET, JWT_ALGORITHM)
   end
 
   def decode_jwt(token)
