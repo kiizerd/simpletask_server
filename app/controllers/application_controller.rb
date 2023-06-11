@@ -24,9 +24,7 @@ class ApplicationController < ActionController::API
     token = generate_jwt(user)
     cookies.encrypted[:token] = {
       value: token,
-      expires: 1.week,
-      httponly: true,
-      secure: true
+      expires: 1.week
     }
   end
 
