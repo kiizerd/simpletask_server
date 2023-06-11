@@ -62,3 +62,5 @@ group :development do
   gem 'binding_of_caller'
   gem 'sassc'
 end
+
+gem "dotenv-rails", "~> 2.8"
