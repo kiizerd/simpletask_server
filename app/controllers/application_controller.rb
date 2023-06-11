@@ -26,7 +26,8 @@ class ApplicationController < ActionController::API
       value: token,
       expires: 1.week,
       httponly: true,
-      secure: true
+      # secure: true
+      domain: 'onrender.com'
     }
   end
 
