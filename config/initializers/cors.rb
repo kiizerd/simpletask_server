@@ -7,9 +7,9 @@
 
 to_regexp = ->(string) { Regexp.new(string) }
 hosts = [
-  *ENV.fetch('ALLOWED_ORIGINS').split(', '),
-  *ENV.fetch('ALLOWED_ORIGINS_REGEXPS').split(';').map(&to_regexp)
-]
+  *ENV.fetch('ALLOWED_ORIGINS', nil)&.split(', '),
+  *ENV.fetch('ALLOWED_ORIGINS_REGEXPS', nil)&.split(';')&.map(&to_regexp)
+].compact
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
