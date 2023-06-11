@@ -27,7 +27,7 @@ class ApplicationController < ActionController::API
       expires: 1.week,
       httponly: true,
       # secure: true
-      domain: 'onrender.com'
+      domain: 'simpletask.onrender.com'
     }
   end
 
