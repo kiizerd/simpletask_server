@@ -18,7 +18,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       generate_session_cookie(user)
       render json: { user: }, status: :created
     else
-      render json: user.errors.messages, status: :unprocessable_entity
+      render json: formatted_errors(user), status: :unprocessable_entity
     end
   end
 
