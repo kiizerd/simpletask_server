@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  devise_for :users, controllers: { sessions: 'users/sessions', registrations: 'users/registrations' },
-                     defaults: { format: :json }
+  devise_for :users, singular: :user, controllers: { sessions: 'users/sessions', registrations: 'users/registrations' }
 
-  # Defines the root path route ("/")
+  devise_scope :user do
+    get '/user', to: 'users/sessions#show'
+  end
+
   root 'projects#index'
 
   resources :projects do
