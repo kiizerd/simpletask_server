@@ -25,6 +25,7 @@ class ApplicationController < ActionController::API
     cookies.encrypted[:token] = {
       value: token,
       expires: 1.week,
+      httponly: true,
       secure: true,
       same_site: :none
     }
@@ -69,7 +70,7 @@ class ApplicationController < ActionController::API
 
   def errors_for_nil_resource
     if @current_user
-      { code: 'record_not_found' }
+      { code: 'record not found' }
     else
       { code: 'authentication failed' }
     end
