@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 # Register a new user
-RSpec.describe 'POST /users/', type: :request do
+RSpec.describe 'POST /users', type: :request do
   context 'client submitted valid data' do
     before do
       user_data = { email: 'foo@bar.com', password: 'password' }
