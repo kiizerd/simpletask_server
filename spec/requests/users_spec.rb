@@ -3,11 +3,7 @@ require 'rails_helper'
 # Register a new user
 RSpec.describe 'POST /users', type: :request do
   context 'client submitted valid data' do
-    before do
-      user_data = { email: 'foo@bar.com', password: 'password' }
-
-      post '/users', params: { user: user_data }
-    end
+    before { post '/users', params: { user: attributes_for(:user) } }
 
     it 'responds with the correct status(201) and new User' do
       user = json_body[:user]
@@ -24,14 +20,10 @@ end
 
 # Create a new session
 RSpec.describe 'POST /users/sign_in', type: :request do
-  before { User.create(email: 'foo@bar.com', password: 'password') }
+  before { create(:user) }
 
   context 'client submitted valid data' do
-    before do
-      user_data = { email: 'foo@bar.com', password: 'password' }
-
-      post '/users/sign_in', params: { user: user_data }
-    end
+    before { post '/users/sign_in', params: { user: attributes_for(:user) } }
 
     it 'responds with correct status(201) and User' do
       expect(response).to have_http_status(:created)
@@ -47,13 +39,11 @@ end
 
 # Deletes an existing session
 RSpec.describe 'DELETE /users/sign_out', type: :request do
-  before { User.create(email: 'foo@bar.com', password: 'password') }
+  before { create(:user) }
 
   context 'client is authorized' do
     before do
-      user_data = { email: 'foo@bar.com', password: 'password' }
-
-      post '/users/sign_in', params: { user: user_data }
+      post '/users/sign_in', params: { user: attributes_for(:user) }
       delete '/users/sign_out'
     end
 
@@ -70,14 +60,13 @@ end
 
 # Deletes a User model
 RSpec.describe 'DELETE /users', type: :request do
-  let(:user_data) { { email: 'foo@bar.com', password: 'password' } }
   before do
-    post '/users', params: { user: user_data }
+    post '/users', params: { user: attributes_for(:user) }
     delete '/users'
   end
 
   it 'deletes the authenticated User' do
-    expect(User.where(email: user_data[:email])).to eq []
+    expect(User.where(email: 'foo@bar.com')).to eq []
   end
 
   it 'responds with no content status' do
