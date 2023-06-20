@@ -5,3 +5,9 @@ FactoryBot.define do
   end
 end
 
+FactoryBot.define do
+  factory :project do
+    title { 'Simple Project' }
+    description { 'A really super simple thing' }
+  end
+end
