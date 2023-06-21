@@ -10,9 +10,12 @@ FactoryBot.define do
     password { 'password' }
   end
 
-FactoryBot.define do
   factory :project do
     title { 'Simple Project' }
     description { 'A really super simple thing' }
+
+    trait :invalid do
+      title { nil }
+    end
   end
 end
