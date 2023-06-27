@@ -21,6 +21,7 @@ gem 'jwt', '~> 1.5', '>= 1.5.4'
 # format and lint
 gem 'rubocop', '~> 1.51', require: false
 gem 'rubocop-rails', '~> 2.19', '>= 2.19.1'
+gem 'rubocop-rspec', require: false
 
 gem 'acts_as_list'
 
