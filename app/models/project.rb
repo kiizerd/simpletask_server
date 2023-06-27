@@ -1,6 +1,8 @@
 class Project < ApplicationRecord
-  has_many :sections, -> { order(id: :asc) }, dependent: :destroy
+  has_many :sections, -> { order(id: :asc) }, dependent: :destroy, inverse_of: :project
   has_many :tasks, dependent: :destroy
+
+  belongs_to :user
 
   default_scope -> { order(id: :asc) }
 
