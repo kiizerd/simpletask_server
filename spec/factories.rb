@@ -6,16 +6,26 @@ FactoryBot.define do
   end
 
   factory :user do
-    email { generate :email }
+    email
     password { 'password' }
   end
 
   factory :project do
     title { 'Simple Project' }
     description { 'A really super simple thing' }
+    user
 
     trait :invalid do
       title { nil }
+    end
+  end
+
+  factory :section do
+    name { 'simple section' }
+    project
+
+    trait :invalid do
+      name { nil }
     end
   end
 end
