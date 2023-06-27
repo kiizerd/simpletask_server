@@ -2,7 +2,7 @@ class ProjectsController < ApplicationController
   def index
     @projects = current_user.projects
 
-    render json: { projects: @projects }, include: [sections: { include: :tasks }]
+    render json: @projects, include: [sections: { include: :tasks }]
   end
 
   def show

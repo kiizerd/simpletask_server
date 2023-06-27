@@ -20,7 +20,7 @@ RSpec.describe 'Projects', type: :request do
 
       it 'responds with only current users projects' do
         get '/projects'
-        expect(json_body[:projects].count).to eq(3)
+        expect(json_body.count).to eq(3)
       end
     end
 
