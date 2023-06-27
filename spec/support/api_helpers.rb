@@ -1,6 +1,7 @@
 module ApiHelpers
   def json_body
-    JSON.parse(response.body).deep_symbolize_keys
+    json = JSON.parse(response.body)
+    json.is_a?(Hash) ? json.deep_symbolize_keys : json
   end
 
   def get_cookie_jar(request, cookies)
@@ -13,12 +14,10 @@ module ApiHelpers
     raise 'Authorization failed' unless jar.encrypted[:token]
   end
 
-  def stub_authorization
-    # rubocop:disable RSpec/AnyInstance
-    user = build_stubbed(:user)
-    allow_any_instance_of(ApplicationController).to receive(:authenticate_user!).and_return(nil)
-    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
-    # rubocop:enable RSpec/AnyInstance
+  def sign_in_user(email)
+    route = '/users/sign_in'
+    params = { user: { email:, password: 'password' } }
+    post route, params:
   end
 end
 
