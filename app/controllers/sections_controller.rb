@@ -4,22 +4,24 @@ class SectionsController < ApplicationController
   def index
     @sections = @project.sections
 
-    render json: @sections
+    render json: @sections, include: :tasks
   end
 
   def show
     @section = @project.sections.find(params[:id])
-
     render json: @section, include: :tasks
+  rescue ActiveRecord::RecordNotFound
+    @section = nil
+    render json: formatted_errors, status: :not_found
   end
 
   def create
     @section = @project.sections.create(section_params)
 
     if @section.save
-      render json: @section
+      render json: @section, status: :created
     else
-      render json: @section.errors, status: :unprocessable_entity
+      render json: formatted_errors, status: :unprocessable_entity
     end
   end
 
@@ -29,7 +31,7 @@ class SectionsController < ApplicationController
     if @section.update(section_params)
       render json: @section
     else
-      render json: @section.errors, status: :unprocessable_entity
+      render json: formatted_errors, status: :unprocessable_entity
     end
   end
 
@@ -39,7 +41,10 @@ class SectionsController < ApplicationController
     @tasks.map(&:destroy)
     @section.destroy
 
-    render json: @project.sections, status: :see_other
+    render json: @project.sections, status: :no_content
+  rescue ActiveRecord::RecordNotFound
+    @section = nil
+    render json: formatted_errors, status: :not_found
   end
 
   def move_task
@@ -58,5 +63,9 @@ class SectionsController < ApplicationController
 
   def section_params
     params.require(:section).permit(:name, :status)
+  end
+
+  def formatted_errors
+    super(@section)
   end
 end
