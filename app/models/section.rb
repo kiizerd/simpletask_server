@@ -1,6 +1,6 @@
 class Section < ApplicationRecord
   belongs_to :project
-  has_many :tasks, -> { order(position: :desc) }
+  has_many :tasks, -> { order(position: :desc) }, dependent: :destroy, inverse_of: :section
 
   default_scope -> { order(id: :asc) }
 
