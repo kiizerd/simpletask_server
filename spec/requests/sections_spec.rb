@@ -3,13 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Sections', type: :request do
-  # GET /projects/:projectId/sections -> Section#index
-  describe 'GET /projects/:projectId/sections' do
-    context 'with authorization and valid :projectId' do
-      let(:section) { create(:section) }
+  # GET /projects/:project_id/sections -> Section#index
+  describe 'GET /projects/:project_id/sections' do
+    context 'with authorization and valid :project_id' do
+      subject(:section) { create(:section) }
 
       before do
-        post '/users/sign_in', params: { user: { email: section.project.user.email, password: 'password' } }
+        sign_in_user(section.user.email)
         get "/projects/#{section.project_id}/sections"
       end
 
@@ -30,13 +30,13 @@ RSpec.describe 'Sections', type: :request do
     end
   end
 
-  # GET /projects/:projectId/sections/:id -> Section#show
-  describe 'GET /projects/:projectId/sections/:id' do
+  # GET /projects/:project_id/sections/:id -> Section#show
+  describe 'GET /projects/:project_id/sections/:id' do
     subject(:section) { create(:section) }
 
     context 'with authorization and requesting existing section' do
       before do
-        post '/users/sign_in', params: { user: { email: section.project.user.email, password: 'password' } }
+        sign_in_user(section.user.email)
         get "/projects/#{section.project_id}/sections/#{section.id}"
       end
 
@@ -51,8 +51,8 @@ RSpec.describe 'Sections', type: :request do
 
     context 'with authorization and requesting nonexistant section' do
       before do
-        post '/users/sign_in', params: { user: { email: section.project.user.email, password: 'password' } }
-        get "/projects/#{section.project_id}/sections/#{section.id + 1}"
+        sign_in_user(section.user.email)
+        get "/projects/#{section.project_id}/sections/1"
       end
 
       it 'responds with not_found(404) status' do
@@ -68,16 +68,15 @@ RSpec.describe 'Sections', type: :request do
     end
   end
 
-  # POST /projects/:projectId/sections -> Section#create
-  describe 'POST /projects/:projectId/sections' do
+  # POST /projects/:project_id/sections -> Section#create
+  describe 'POST /projects/:project_id/sections' do
     let(:project) { create(:project) }
+    let(:route) { "/projects/#{project.id}/sections" }
 
     context 'with authorized client and valid data' do
       let(:post_section) do
-        create_section_route = "/projects/#{project.id}/sections"
-        post create_section_route, params: {
-          section: attributes_for(:section)
-        }
+        params = { section: attributes_for(:section) }
+        post route, params:
       end
 
       before { sign_in_user(project.user.email) }
@@ -99,10 +98,8 @@ RSpec.describe 'Sections', type: :request do
 
     context 'with authorized client and invalid data' do
       let(:post_invalid_section) do
-        create_section_route = "/projects/#{project.id}/sections"
-        post create_section_route, params: {
-          section: attributes_for(:section, :invalid)
-        }
+        params = { section: attributes_for(:section, :invalid) }
+        post route, params:
       end
 
       before { sign_in_user(project.user.email) }
@@ -124,23 +121,21 @@ RSpec.describe 'Sections', type: :request do
 
     context 'without authorization' do
       it 'responds with unauthorized(401) status' do
-        create_section_route = "/projects/#{project.id}/sections"
-        post create_section_route, params: {
-          section: attributes_for(:section)
-        }
+        post route, params: { section: attributes_for(:section) }
         expect(response).to have_http_status(:unauthorized)
       end
     end
   end
 
-  # PATCH /projects/:projectId/sections/:id -> Section#update
-  describe 'PATCH /projects/:projectId/sections/:id' do
+  # PATCH /projects/:project_id/sections/:id -> Section#update
+  describe 'PATCH /projects/:project_id/sections/:id' do
     subject(:section) { create(:section) }
+
+    let(:route) { "/projects/#{section.project_id}/sections/#{section.id}" }
 
     context 'with authorization and valid data' do
       let(:patch_section) do
-        patch_route = "/projects/#{section.project_id}/sections/#{section.id}"
-        patch patch_route, params: { section: { name: 'new_name' } }
+        patch route, params: { section: { name: 'new_name' } }
       end
 
       before do
@@ -164,8 +159,7 @@ RSpec.describe 'Sections', type: :request do
 
     context 'with authorization and invalid_data' do
       let(:invalid_patch_section) do
-        patch_route = "/projects/#{section.project_id}/sections/#{section.id}"
-        patch patch_route, params: { section: { name: '' } }
+        patch route, params: { section: { name: '' } }
       end
 
       before do
@@ -189,8 +183,7 @@ RSpec.describe 'Sections', type: :request do
 
     context 'without authorization' do
       let(:patch_section) do
-        patch_route = "/projects/#{section.project_id}/sections/#{section.id}"
-        patch patch_route, params: { section: { name: 'new_name' } }
+        patch route, params: { section: { name: 'new_name' } }
       end
 
       it 'responds with unauthorized(401) status' do
@@ -200,14 +193,16 @@ RSpec.describe 'Sections', type: :request do
     end
   end
 
-  # DELETE /projects/:projectId/sections/:id -> Section#destroy
-  describe 'DELETE /projects/:projectId/sections/:id' do
+  # DELETE /projects/:project_id/sections/:id -> Section#destroy
+  describe 'DELETE /projects/:project_id/sections/:id' do
     subject(:section) { create(:section) }
 
-    context 'when client authorized and requests valid section' do
-      before { sign_in_user(section.project.user.email) }
+    let(:route) { "/projects/#{section.project_id}/sections/#{section.id}" }
 
-      let(:delete_section) { delete "/projects/#{section.project_id}/sections/#{section.id}" }
+    context 'when client authorized and requests valid section' do
+      before { sign_in_user(section.user.email) }
+
+      let(:delete_section) { delete route }
 
       it 'deletes the requested section' do
         expect { delete_section }.to change(Section, :count).by(-1)
@@ -220,7 +215,7 @@ RSpec.describe 'Sections', type: :request do
     end
 
     context 'when client authorized but requests invalid section' do
-      before { sign_in_user(section.project.user.email) }
+      before { sign_in_user(section.user.email) }
 
       it 'responds with not_found(404) status' do
         delete "/projects/#{section.project.id}/sections/0"
