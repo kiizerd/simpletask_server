@@ -28,4 +28,15 @@ FactoryBot.define do
       name { nil }
     end
   end
+
+  factory :task do
+    name { 'simple task' }
+    details { 'complicated details' }
+    project
+    section
+
+    trait :invalid do
+      name { nil }
+    end
+  end
 end
